@@ -1,1 +1,1 @@
-This note app made by watching TapTap's YouTube tutorial. I've learnt lots of new things from it. 
+This note app I made by watching TapTap's YouTube tutorial. I've learnt lots of new things from it. 
