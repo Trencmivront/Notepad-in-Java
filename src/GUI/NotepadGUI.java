@@ -1,7 +1,10 @@
 package GUI;
 
 import javax.swing.*;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.undo.UndoManager;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,9 +12,13 @@ import java.io.*;
 
 public class NotepadGUI extends JFrame {
     private JFileChooser fileChooser;
-    private JTextArea textArea;
 
+    //we define textArea as a global variable to make it usable by more than one actions
+    private JTextArea textArea;
     private File currentFile;
+
+    //Swing's built in library to manage undo and redo functionalities
+    private UndoManager undoManager;
 
     public NotepadGUI(){
         setTitle("notepad");
@@ -27,16 +34,29 @@ public class NotepadGUI extends JFrame {
         fileChooser.setCurrentDirectory(new File("src/assets"));
         fileChooser.setFileFilter(new FileNameExtensionFilter("Text File", "txt"));
 
-        addComponents();
+        undoManager = new UndoManager();
+
+        addGUIComponents();
     }
 
-    public void addComponents(){
+    public void addGUIComponents(){
 
         addToolBar();
 
         //area to text
         textArea = new JTextArea();
-        add(textArea, BorderLayout.CENTER);
+        textArea.getDocument().addUndoableEditListener(new UndoableEditListener() {
+            @Override
+            public void undoableEditHappened(UndoableEditEvent e) {
+                //adds each edit that we do in the text area (either adding or removing text)
+                undoManager.addEdit(e.getEdit());
+            }
+        });
+
+        //moves the page as we write characters
+        JScrollPane scrollPane = new JScrollPane(textArea);
+
+        add(scrollPane, BorderLayout.CENTER);
 
     }
 
@@ -47,13 +67,16 @@ public class NotepadGUI extends JFrame {
 
         JMenuBar menuBar = new JMenuBar();
 
+        //add menus
         menuBar.add(addFileMenu());
+        menuBar.add(addEditMenu());
+        menuBar.add(addFormatMenu());
 
         add(menuBar , BorderLayout.NORTH);
 
     }
 
-    public JMenu addFileMenu(){
+    private JMenu addFileMenu(){
         JMenu file = new JMenu("File");
 
         JMenuItem newMenuItem = new JMenuItem("New");
@@ -211,6 +234,98 @@ public class NotepadGUI extends JFrame {
         file.add(exitMenuItem);
 
         return file;
+    }
+
+    private JMenu addEditMenu(){
+
+        JMenu editMenu = new JMenu("Edit");
+
+        JMenuItem undoMenuItem = new JMenuItem("Undo");
+        undoMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent a) {
+                //means that if there are any edits that we can undo, then we undo them
+                if(undoManager.canUndo()){
+                    undoManager.undo();
+                }
+            }
+        });
+        editMenu.add(undoMenuItem);
+
+        JMenuItem redoMenuItem = new JMenuItem("Redo");
+        redoMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(undoManager.canRedo()){
+                    undoManager.redo();
+                }
+            }
+        });
+        editMenu.add(redoMenuItem);
+
+        return editMenu;
+    }
+
+    private JMenu addFormatMenu(){
+        JMenu formatMenu = new JMenu("Format");
+
+        //wrap word functionality
+        JCheckBoxMenuItem wordWrapMenuItem = new JCheckBoxMenuItem("Word Wrap");
+        wordWrapMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                boolean isChecked = wordWrapMenuItem.getState();
+
+                if(isChecked){
+                    //wraps by character
+                    textArea.setLineWrap(true);
+
+                    //changes the wrapping style to word
+                    textArea.setWrapStyleWord(true);
+                }
+                else
+                    textArea.setLineWrap(false);
+            }
+        });
+        formatMenu.add(wordWrapMenuItem);
+
+        //aligning text
+        JMenu alignTextMenu = new JMenu("Align Text");
+
+        //align text to the lef
+        JMenuItem alignTextLeftMenuItem = new JMenuItem("Left");
+        alignTextLeftMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent a) {
+                textArea.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+            }
+        });
+        alignTextMenu.add(alignTextLeftMenuItem);
+
+        //align text to the right
+        JMenuItem alignTextRightMenuItem = new JMenuItem("Right");
+        alignTextRightMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent a) {
+                textArea.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+            }
+        });
+        alignTextMenu.add(alignTextRightMenuItem);
+
+        formatMenu.add(alignTextMenu);
+
+        //font format
+        JMenuItem fontMenuItem = new JMenuItem("Font...");
+        fontMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent a) {
+                //launch font menu
+                new FontMenu(NotepadGUI.this).setVisible(true);
+            }
+        });
+        formatMenu.add(fontMenuItem);
+
+        return formatMenu;
     }
 
 }
