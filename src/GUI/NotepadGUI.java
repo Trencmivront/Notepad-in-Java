@@ -15,6 +15,9 @@ public class NotepadGUI extends JFrame {
 
     //we define textArea as a global variable to make it usable by more than one actions
     private JTextArea textArea;
+    //because of our textArea is private method, we can't get it directly so we use getTextArea function
+    public JTextArea getTextArea(){return textArea;}
+
     private File currentFile;
 
     //Swing's built in library to manage undo and redo functionalities
