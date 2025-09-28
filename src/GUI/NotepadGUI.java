@@ -17,6 +17,8 @@ public class NotepadGUI extends JFrame {
     private JTextArea textArea;
     //because of our textArea is private method, we can't get it directly so we use getTextArea function
     public JTextArea getTextArea(){return textArea;}
+    private int zoomValue;
+    public int getZoomValue(){return zoomValue;}
 
     private File currentFile;
 
@@ -58,7 +60,6 @@ public class NotepadGUI extends JFrame {
 
         //moves the page as we write characters
         JScrollPane scrollPane = new JScrollPane(textArea);
-
         add(scrollPane, BorderLayout.CENTER);
 
     }
@@ -74,6 +75,9 @@ public class NotepadGUI extends JFrame {
         menuBar.add(addFileMenu());
         menuBar.add(addEditMenu());
         menuBar.add(addFormatMenu());
+        // add zoom panel
+        menuBar.add(new JLabel("Zoom : "));
+        menuBar.add(addZoomPanel());
 
         add(menuBar , BorderLayout.NORTH);
 
@@ -330,6 +334,60 @@ public class NotepadGUI extends JFrame {
         formatMenu.add(fontMenuItem);
 
         return formatMenu;
+    }
+
+    private JPanel addZoomPanel(){
+
+        JPanel zoomPanel = new JPanel();
+        zoomPanel.setLayout(new BoxLayout(zoomPanel, BoxLayout.X_AXIS));
+
+
+        JTextField currentZoomValue = new JTextField(Integer.toString(zoomValue));
+        currentZoomValue.setMaximumSize(new Dimension(30,20));
+        currentZoomValue.setEditable(false);
+
+
+        JButton zoomInButton = new JButton("+");
+        zoomInButton.setMaximumSize(new Dimension(20,20));
+        zoomInButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                zoomValue++;
+                textArea.setFont(new Font(
+                        textArea.getFont().getFontName(),
+                        textArea.getFont().getStyle(),
+                        textArea.getFont().getSize() + 1
+                ));
+
+                currentZoomValue.setText(Integer.toString(zoomValue));
+
+            }
+        });
+
+        JButton zoomOutButton = new JButton("-");
+        zoomOutButton.setMaximumSize(new Dimension(20,20));
+        zoomOutButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                zoomValue--;
+                textArea.setFont(new Font(
+                        textArea.getFont().getFontName(),
+                        textArea.getFont().getStyle(),
+                        textArea.getFont().getSize() - 1
+                ));
+
+                currentZoomValue.setText(Integer.toString(zoomValue));
+
+            }
+        });
+
+        zoomPanel.add(zoomOutButton);
+
+        zoomPanel.add(currentZoomValue);
+
+        zoomPanel.add(zoomInButton);
+
+        return zoomPanel;
     }
 
 }

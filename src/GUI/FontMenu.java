@@ -13,9 +13,9 @@ public class FontMenu extends JDialog {
     // non-static variables makes variables change by each new FontMenu object.
     // because of that font of textArea returns to it's initial values
     // we make them static for when we change variables, other objects will have same values
-    private static String font = source.getTextArea().getFont().getFontName();
-    private static int style = source.getTextArea().getFont().getStyle();
-    private static int size = source.getTextArea().getFont().getSize();
+    private String font = source.getTextArea().getFont().getFontName();
+    private int style = source.getTextArea().getFont().getStyle();
+    private int size = source.getTextArea().getFont().getSize();
 
     public FontMenu(NotepadGUI source){
         this.source = source;
@@ -275,7 +275,9 @@ public class FontMenu extends JDialog {
         JPanel fontSizePanel = new JPanel();
         fontSizePanel.setBounds(275, 15, 125, 160);
 
-        JTextField currentFontSizeField = new JTextField(Integer.toString(source.getTextArea().getFont().getSize()));
+
+        JTextField currentFontSizeField = new JTextField(Integer.toString(source.getTextArea().getFont().getSize() - source.getZoomValue()));
+
         currentFontSizeField.setPreferredSize(new Dimension(125, 20));
         currentFontSizeField.setEditable(false);
         fontSizePanel.add(currentFontSizeField);
@@ -285,13 +287,13 @@ public class FontMenu extends JDialog {
 
         listOfFontSizesPanel.setBackground(Color.WHITE);
 
-        for(int i = 1; i <= 20; i++){
+        for(int i = 1; i <= 30; i++){
             JLabel fontSize = new JLabel(Integer.toString(i));
             int a = i;
             fontSize.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    size = a;
+                    size = a + source.getZoomValue();
                     currentFontSizeField.setText(fontSize.getText());
                     currentFontSizeField.setBackground(Color.GRAY);
                 }
