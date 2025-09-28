@@ -16,6 +16,10 @@ This was the hardest part of the project. I watched the tutorial for Font area, 
 
 <img src = "images/screen_shot_3.png" width = "500" height = "400">
 
+I'm reall done with this zoom option. It makes me sick.
+
+<img src = "images/screen_shot_4.png" width = "500" height = "400">
+
  Struggling with code is best way of learning rather than just copy-writing it. I could finish this 80 min total project just by writing but I brain-worked on it 2 hours a day, searching uses of new things I saw. It's been 3 days I'm doing it and I really happy with this time.
 
 ←—————————————————————————————————————→
