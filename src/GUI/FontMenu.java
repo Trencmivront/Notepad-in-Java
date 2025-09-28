@@ -8,7 +8,14 @@ import java.util.Arrays;
 
 public class FontMenu extends JDialog {
 
-    private NotepadGUI source;
+    private static NotepadGUI source = new NotepadGUI();
+
+    // non-static variables makes variables change by each new FontMenu object.
+    // because of that font of textArea returns to it's initial values
+    // we make them static for when we change variables, other objects will have same values
+    private static String font = source.getTextArea().getFont().getFontName();
+    private static int style = source.getTextArea().getFont().getStyle();
+    private static int size = source.getTextArea().getFont().getSize();
 
     public FontMenu(NotepadGUI source){
         this.source = source;
@@ -25,18 +32,24 @@ public class FontMenu extends JDialog {
 
         addMenuComponents();
 
-
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                setFont();
+            }
+        });
     }
 
     private void addMenuComponents(){
         addFontChooser();
         addStyleChooser();
+        addSizeChooser();
     }
 
     private void addFontChooser(){
 
         JLabel fontLabel = new JLabel("Font:");
-        fontLabel.setBounds(10, 15, 125, 10);
+        fontLabel.setBounds(10, 5, 125, 15);
         add(fontLabel);
 
         //font panel will display the current font and the list of fonts available
@@ -46,6 +59,7 @@ public class FontMenu extends JDialog {
         //display current font
         JTextField currentFontField = new JTextField(source.getTextArea().getFont().getFontName());
         currentFontField.setEditable(false);
+        currentFontField.setPreferredSize(new Dimension(125, 20));
         fontPanel.add(currentFontField);
 
         //display list of available fonts
@@ -73,12 +87,11 @@ public class FontMenu extends JDialog {
                @Override
                public void mouseClicked(MouseEvent e) {
                    // when clicked set current font of textArea to the font selected
-                   source.getTextArea().setFont(new Font(fontNameLabel.getText(),
-                           source.getTextArea().getFont().getStyle(),
-                           source.getTextArea().getFont().getSize()));
+                   font = fontNameLabel.getText();
                    // when clicked set currentFontField to font name
                    currentFontField.setText(fontNameLabel.getText());
                    fontNameLabel.setBackground(Color.GRAY);
+
                }
 
                @Override
@@ -98,6 +111,7 @@ public class FontMenu extends JDialog {
                     // add to panel
                     listOfFontsPanel.add(fontNameLabel);
         }
+
 
         fontPanel.add(scrollPane);
         add(fontPanel);
@@ -135,8 +149,9 @@ public class FontMenu extends JDialog {
         }
 
         JTextField currentFontStyleField = new JTextField(currentFontStyleText);
-        currentFontStyleField.setPreferredSize(new Dimension(60, 15));
+        currentFontStyleField.setPreferredSize(new Dimension(125, 20));
         currentFontStyleField.setEditable(false);
+
         fontStylePanel.add(currentFontStyleField);
 
         // display list of all font style available
@@ -152,7 +167,7 @@ public class FontMenu extends JDialog {
         plainStyle.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-
+                style = plainStyle.getFont().getStyle();
                 currentFontStyleField.setText(plainStyle.getText());
                 plainStyle.setBackground(Color.GRAY);
             }
@@ -176,9 +191,8 @@ public class FontMenu extends JDialog {
         boldStyle.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-
+                style = boldStyle.getFont().getStyle();
                 currentFontStyleField.setText(boldStyle.getText());
-
                 boldStyle.setBackground(Color.GRAY);
             }
 
@@ -201,7 +215,7 @@ public class FontMenu extends JDialog {
         italicStyle.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-
+                style = italicStyle.getFont().getStyle();
                 currentFontStyleField.setText(italicStyle.getText());
                 italicStyle.setBackground(Color.GRAY);
             }
@@ -225,7 +239,7 @@ public class FontMenu extends JDialog {
         boldItalicStyle.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-
+                style = boldItalicStyle.getFont().getStyle();
                 currentFontStyleField.setText(boldItalicStyle.getText());
                 boldItalicStyle.setBackground(Color.GRAY);
             }
@@ -251,5 +265,63 @@ public class FontMenu extends JDialog {
 
     }
 
+    private void addSizeChooser(){
+
+        JLabel fontSizeLabel = new JLabel("Font Size:");
+        fontSizeLabel.setBounds(275, 5, 125, 15);
+        add(fontSizeLabel);
+
+        // will show the current font size and list of font sizes to choose from
+        JPanel fontSizePanel = new JPanel();
+        fontSizePanel.setBounds(275, 15, 125, 160);
+
+        JTextField currentFontSizeField = new JTextField(Integer.toString(source.getTextArea().getFont().getSize()));
+        currentFontSizeField.setPreferredSize(new Dimension(125, 20));
+        currentFontSizeField.setEditable(false);
+        fontSizePanel.add(currentFontSizeField);
+
+        JPanel listOfFontSizesPanel = new JPanel();
+        listOfFontSizesPanel.setLayout(new BoxLayout(listOfFontSizesPanel, BoxLayout.Y_AXIS));
+
+        listOfFontSizesPanel.setBackground(Color.WHITE);
+
+        for(int i = 1; i <= 20; i++){
+            JLabel fontSize = new JLabel(Integer.toString(i));
+            int a = i;
+            fontSize.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    size = a;
+                    currentFontSizeField.setText(fontSize.getText());
+                    currentFontSizeField.setBackground(Color.GRAY);
+                }
+
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    fontSize.setOpaque(true);
+                    fontSize.setBackground(Color.LIGHT_GRAY);
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    fontSize.setBackground(null);
+                }
+            });
+
+            listOfFontSizesPanel.add(fontSize);
+        }
+
+        JScrollPane scrollPane = new JScrollPane(listOfFontSizesPanel);
+        scrollPane.setPreferredSize(new Dimension(125, 125));
+
+        fontSizePanel.add(scrollPane);
+
+        add(fontSizePanel);
+
+    }
+
+    private void setFont(){
+        source.getTextArea().setFont(new Font(font, style, size));
+    }
 
 }

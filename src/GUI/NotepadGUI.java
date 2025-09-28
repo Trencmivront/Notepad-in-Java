@@ -324,6 +324,7 @@ public class NotepadGUI extends JFrame {
             public void actionPerformed(ActionEvent a) {
                 //launch font menu
                 new FontMenu(NotepadGUI.this).setVisible(true);
+
             }
         });
         formatMenu.add(fontMenuItem);
