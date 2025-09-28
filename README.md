@@ -1,7 +1,6 @@
 # Notepad Application
 
-The main app has a different texture than original JFrame texture. I used JTattoo Look and Feel for my app. Here is the link you can download it from⬇️
-https://jtattoo.de/index.html
+The main app has a different texture than original JFrame texture. I used JTattoo Look and Feel for my app. Here is the [link](https://jtattoo.de/index.html) you can download it from.
 
 I created a different directory in my project's directory for that jar file and added it into that directory.
 
